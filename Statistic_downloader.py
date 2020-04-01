@@ -458,7 +458,6 @@ def get_provinces():
 if __name__ == '__main__':
     default_config_dir = ''
     check_settings(default_config_dir)
-    check_settings("/")
     timepoints = get_timeseries_points()
     print(push_data_to_influx(timepoints))
 
