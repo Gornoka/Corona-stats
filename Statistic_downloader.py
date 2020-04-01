@@ -346,8 +346,9 @@ def push_data_to_influx(datalist):
     number_of_chunks = int(len(dictlist) / chunk_size)
     dictlist_chunks = chunks(dictlist, chunk_size)
 
-    print('uploading data in {} chuks'.format(number_of_chunks))
-    progress_bar = Bar("\n\nuploading chunks", max=number_of_chunks)
+    print('uploading data in {} chuks\n\n'.format(number_of_chunks))
+
+    progress_bar = Bar("uploading chunks", max=number_of_chunks)
     for i, c in enumerate(dictlist_chunks):
         progress_bar.next()
         result = influx_client.write_points(c)
