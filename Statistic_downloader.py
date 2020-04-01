@@ -8,6 +8,7 @@ from github import Github
 import json
 import copy
 import re
+from progress.bar import Bar
 
 DOWNLOAD_LINK = ""
 INFLUX_CONFIG = {
@@ -346,9 +347,11 @@ def push_data_to_influx(datalist):
     dictlist_chunks = chunks(dictlist, chunk_size)
 
     print('uploading data in {} chuks'.format(number_of_chunks))
+    progress_bar = Bar("\n\nuploading chunks", max=number_of_chunks)
     for i, c in enumerate(dictlist_chunks):
+        progress_bar.next()
         result = influx_client.write_points(c)
-        print('finished chunk {}/{} '.format(i, number_of_chunks))
+    progress_bar.finish()
     influx_client.close()
     return result
 
@@ -463,7 +466,5 @@ if __name__ == '__main__':
 
     data = get_data("csse_covid_19_data/csse_covid_19_daily_reports/")
 
-    # for d in data:
-    #    print(d.__dict__)
 
     print(push_data_to_influx(data))
