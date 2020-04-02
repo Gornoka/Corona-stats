@@ -11,7 +11,8 @@ Usage
 3.install script dependecies
     PyGithub => python -m pip install PyGithub
     influx   => python -m pip install influx
-    progress => python -m pip install progress
+    progressbar => python -m pip install progress
+
 4.run script once to create default settings
     fill Settings with values and run Script
 
@@ -25,8 +26,9 @@ formats / contents it may need to be cleaned first before you can use it.
 Influx works very well with Grafana, which can be used to create visualisations of the data
 an example dashboard is saved as json.
 
-example image from Grafana dashboard
-![grafana example](grafana_screenshot.png)
+Example grafana screen.
+
+https://grafana.soontm.net/dashboard/snapshot/vdQctHJcRgAuJCABf4i0Gum6epwNJd4E?orgId=0
 
 
     
