@@ -153,8 +153,6 @@ class DataPoint:
             'Lat': safe_float_cast(province_data.get(region_country_index, {}).get("Lat", '')),
             'Long_': safe_float_cast(province_data.get(region_country_index, {}).get("Long_", '')),
         }
-        # print(province_data.get(fix_china(self.meta_list[0]), {}))
-        # print(self.tags["Country_Region"], self.fields["Lat"], self.fields["Long_"],(province_data.get(fix_china(self.meta_list[0]), {})))
 
     def fill_from_header3(self):
 

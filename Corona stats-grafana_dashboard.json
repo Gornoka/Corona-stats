@@ -32,6 +32,7 @@
   "annotations": {
     "list": [
       {
+        "$$hashKey": "object:467",
         "builtIn": 1,
         "datasource": "-- Grafana --",
         "enable": true,
@@ -46,7 +47,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1585855089470,
+  "iteration": 1586969238842,
   "links": [],
   "panels": [
     {
@@ -119,6 +120,8 @@
           "measurement": "timeseries",
           "orderByTime": "ASC",
           "policy": "autogen",
+          "query": "SELECT sum(\"Confirmed\") FROM \"autogen\".\"timeseries\" WHERE (\"Country_Region\" =~ /^$Region$/ OR \"Province_State\" =~ /^$Region$/ AND \"confirmed\" > $min_value) AND $timeFilter GROUP BY time($__interval), \"Country_Region\", \"Province_State\"",
+          "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -293,6 +296,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:955",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -301,6 +305,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:956",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -516,6 +521,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:623",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -524,6 +530,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:624",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -783,6 +790,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:1210",
           "format": "short",
           "label": null,
           "logBase": 2,
@@ -791,6 +799,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:1211",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1005,6 +1014,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:345",
           "format": "short",
           "label": null,
           "logBase": 2,
@@ -1013,6 +1023,387 @@
           "show": true
         },
         {
+          "$$hashKey": "object:346",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_INFLUXDB_CORONA}",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 18
+      },
+      "hiddenSeries": false,
+      "id": 22,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "maxPerRow": 2,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "repeat": "Region",
+      "repeatDirection": "h",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "$col  $tag_Country_Region",
+          "groupBy": [
+            {
+              "params": [
+                "Country_Region"
+              ],
+              "type": "tag"
+            }
+          ],
+          "measurement": "timeseries",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT Recovered,\"Confirmed\",\"Deaths\"FROM \"timeseries\" WHERE(\"Country_Region\" =~ /^$Region$/ OR \"Province_State\" =~ /^$Region$/ ) AND $timeFilter GROUP BY \"Country_Region\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "Confirmed"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Deaths"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Recovered"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "Country_Region",
+              "operator": "=",
+              "value": "Germany"
+            }
+          ]
+        },
+        {
+          "alias": "Active $tag_Country_Region",
+          "groupBy": [
+            {
+              "params": [
+                "Country_Region"
+              ],
+              "type": "tag"
+            }
+          ],
+          "measurement": "timeseries",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT \"Confirmed\"- \"Deaths\"-\"Recovered\" FROM \"timeseries\" WHERE(\"Country_Region\" =~ /^$Region$/ OR \"Province_State\" =~ /^$Region$/ ) AND $timeFilter GROUP BY \"Country_Region\"",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "Confirmed"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Deaths"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Recovered"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "Country_Region",
+              "operator": "=",
+              "value": "Germany"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Detailed Overview $Region ",
+      "tooltip": {
+        "shared": true,
+        "sort": 2,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:133",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:134",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_INFLUXDB_CORONA}",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 34
+      },
+      "hiddenSeries": false,
+      "id": 32,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "maxPerRow": 2,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "repeat": "Region",
+      "repeatDirection": "h",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "$col  $tag_Country_Region",
+          "groupBy": [
+            {
+              "params": [
+                "Country_Region"
+              ],
+              "type": "tag"
+            }
+          ],
+          "measurement": "timeseries",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT Recovered,\"Confirmed\",\"Deaths\"FROM \"timeseries\" WHERE(\"Country_Region\" =~ /^$Region$/ OR \"Province_State\" =~ /^$Region$/ ) AND $timeFilter GROUP BY \"Country_Region\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "Confirmed"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Deaths"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Recovered"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "Country_Region",
+              "operator": "=",
+              "value": "Germany"
+            }
+          ]
+        },
+        {
+          "alias": "Active $tag_Country_Region",
+          "groupBy": [
+            {
+              "params": [
+                "Country_Region"
+              ],
+              "type": "tag"
+            }
+          ],
+          "measurement": "timeseries",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT \"Confirmed\"- \"Deaths\"-\"Recovered\" FROM \"timeseries\" WHERE(\"Country_Region\" =~ /^$Region$/ OR \"Province_State\" =~ /^$Region$/ ) AND $timeFilter GROUP BY \"Country_Region\"",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "Confirmed"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Deaths"
+                ],
+                "type": "field"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "Recovered"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "Country_Region",
+              "operator": "=",
+              "value": "Germany"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Detailed Overview $Region ",
+      "tooltip": {
+        "shared": true,
+        "sort": 2,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:133",
+          "format": "short",
+          "label": null,
+          "logBase": 10,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:134",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1039,7 +1430,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 18
+        "y": 50
       },
       "hiddenSeries": false,
       "id": 10,
@@ -1284,7 +1675,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 50
       },
       "hiddenSeries": false,
       "id": 7,
@@ -1506,6 +1897,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:4536",
           "decimals": null,
           "format": "percentunit",
           "label": null,
@@ -1515,6 +1907,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:4537",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1529,6 +1922,7 @@
       }
     }
   ],
+  "refresh": false,
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
@@ -1560,6 +1954,7 @@
       {
         "allValue": null,
         "current": {
+          "$$hashKey": "object:744",
           "selected": true,
           "text": "10",
           "value": "10"
@@ -1571,21 +1966,25 @@
         "name": "max_entries",
         "options": [
           {
+            "$$hashKey": "object:744",
             "selected": true,
             "text": "10",
             "value": "10"
           },
           {
+            "$$hashKey": "object:745",
             "selected": false,
             "text": "20",
             "value": "20"
           },
           {
+            "$$hashKey": "object:746",
             "selected": false,
             "text": "50",
             "value": "50"
           },
           {
+            "$$hashKey": "object:747",
             "selected": false,
             "text": "100",
             "value": "100"
@@ -1598,7 +1997,8 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
+          "$$hashKey": "object:1821",
+          "selected": true,
           "text": "10",
           "value": "10"
         },
@@ -1609,26 +2009,31 @@
         "name": "min_value",
         "options": [
           {
+            "$$hashKey": "object:1820",
             "selected": false,
             "text": "0",
             "value": "0"
           },
           {
+            "$$hashKey": "object:1821",
             "selected": true,
             "text": "10",
             "value": "10"
           },
           {
+            "$$hashKey": "object:1822",
             "selected": false,
             "text": "20",
             "value": "20"
           },
           {
+            "$$hashKey": "object:1823",
             "selected": false,
             "text": "30",
             "value": "30"
           },
           {
+            "$$hashKey": "object:1824",
             "selected": false,
             "text": "100",
             "value": "100"
@@ -1641,7 +2046,7 @@
     ]
   },
   "time": {
-    "from": "now-60d",
+    "from": "now-90d",
     "to": "now"
   },
   "timepicker": {
@@ -1664,5 +2069,5 @@
   "variables": {
     "list": []
   },
-  "version": 36
+  "version": 58
 }
