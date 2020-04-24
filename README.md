@@ -9,9 +9,9 @@ Usage
 2.Configure Influx and create database <covid_stats>
 
 3.install script dependecies
-    PyGithub => python -m pip install PyGithub
-    influx   => python -m pip install influx
-    progress => python -m pip install progress
+    PyGithub => python3 -m pip install PyGithub
+    influx   => python3 -m pip install influx
+    progress => python3 -m pip install progress
 4.run script once to create default settings
     fill Settings with values and run Script
 
