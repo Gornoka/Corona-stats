@@ -113,9 +113,12 @@ class DataPoint:
             self.fill_from_header3()
         elif self.headers == ['Province/State', 'Country/Region', 'Last Update', 'Confirmed', 'Deaths', 'Recovered']:
             self.fill_from_header2(province_data)
-
+        elif self.headers == ['FIPS', 'Admin2', 'Province_State', 'Country_Region', 'Last_Update', 'Lat', 'Long_',
+                              'Confirmed', 'Deaths', 'Recovered', 'Active', 'Combined_Key', 'Incidence_Rate',
+                              'Case-Fatality_Ratio']:
+            self.fill_from_header5()
         else:
-            print('USING DEBUG METHÒD')
+            print('USING DEBUG METHOD', self.headers)
             self.fill_from_header4()
 
     def fill_from_header2(self, province_data):
@@ -227,6 +230,55 @@ class DataPoint:
             'Lat': safe_float_cast(self.in_list[5]),
             'Long_': safe_float_cast(self.in_list[6]),
         }
+
+    def fill_from_header5(self):
+        requiered_headers = ['FIPS', 'Admin2', 'Province_State', 'Country_Region', 'Last_Update', 'Lat', 'Long_',
+                             'Confirmed', 'Deaths', 'Recovered', 'Active', 'Combined_Key', 'Incidence_Rate',
+                             'Case-Fatality_Ratio']
+        for i in range(len(requiered_headers)):
+            try:
+                if requiered_headers[i] != self.headers[i]:
+                    raise HeaderMismatch("Header Mismatch fix headers or DataPoint.fill_from_header4")
+            except IndexError as ind:
+                print(ind, ind.args)
+                raise HeaderMismatch("Header Mismatch fix headers or DataPoint.fill_from_header4")
+            except ValueError as val:
+                print(val, val.args)
+                raise HeaderMismatch("Header Mismatch fix headers or DataPoint.fill_from_header4")
+        try:
+            self.measurement = 'cases'
+            self.time = set_time_to_noon(self.in_list[4])
+            self.tags = {
+                'FIPS': self.in_list[0],
+                'Admin2': self.in_list[1],
+                'Province_State': self.in_list[2],
+                'Country_Region': self.in_list[3],
+
+                # Todo cast to datetime object => new function to transform all string formats..
+
+                'Combined_Key': self.in_list[11]
+            }
+            self.fields = {
+                'Last_Update': fix_american_dates(self.in_list[4]),
+                'Lat': safe_float_cast(self.in_list[5]),
+                'Long_': safe_float_cast(self.in_list[6]),
+                'Incident_Rate': safe_float_cast(self.in_list[12]),
+                'Case-Fatality_Ratio': safe_float_cast(self.in_list[13])
+            }
+
+            to_cast_to_int = [('Deaths',self.in_list[8]),
+            ('Recovered',self.in_list[9]),
+            ('Active',self.in_list[10]),
+            (self.fields['Confirmed'],self.in_list[7])]
+            for p in to_cast_to_int:
+                try:
+                    self.fields[p[0]] = p[1]
+                except Exception as _e:
+                    print("{} can not Format {}".format(_e,p))
+
+
+        except ValueError as _v:
+            print(_v, self.in_list)
 
 
 class TimeSeriesPoint:
@@ -464,6 +516,5 @@ if __name__ == '__main__':
     print(push_data_to_influx(timepoints))
 
     data = get_data("csse_covid_19_data/csse_covid_19_daily_reports/")
-
 
     print(push_data_to_influx(data))
