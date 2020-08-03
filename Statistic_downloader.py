@@ -119,7 +119,7 @@ class DataPoint:
             self.fill_from_header5()
         else:
             print('USING DEBUG METHOD', self.headers)
-            self.fill_from_header4()
+            self.fill_from_header5()
 
     def fill_from_header2(self, province_data):
 
@@ -272,7 +272,7 @@ class DataPoint:
                               ('Confirmed', self.in_list[7])]
             for p in to_cast_to_int:
                 try:
-                    self.fields[p[0]] = p[1]
+                    self.fields[p[0]] = int(p[1])
                 except Exception as _e:
                     print("{} can not Format {}".format(_e, p))
 
