@@ -274,7 +274,7 @@ class DataPoint:
                 try:
                     self.fields[p[0]] = int(p[1])
                 except Exception as _e:
-                    print("{} can not Format {}".format(_e, p))
+                    print("{} can not Format {} from line".format(_e, p,self.in_list))
 
 
         except ValueError as _v:
