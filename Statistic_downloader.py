@@ -266,15 +266,15 @@ class DataPoint:
                 'Case-Fatality_Ratio': safe_float_cast(self.in_list[13])
             }
 
-            to_cast_to_int = [('Deaths',self.in_list[8]),
-            ('Recovered',self.in_list[9]),
-            ('Active',self.in_list[10]),
-            (self.fields['Confirmed'],self.in_list[7])]
+            to_cast_to_int = [('Deaths', self.in_list[8]),
+                              ('Recovered', self.in_list[9]),
+                              ('Active', self.in_list[10]),
+                              ('Confirmed', self.in_list[7])]
             for p in to_cast_to_int:
                 try:
                     self.fields[p[0]] = p[1]
                 except Exception as _e:
-                    print("{} can not Format {}".format(_e,p))
+                    print("{} can not Format {}".format(_e, p))
 
 
         except ValueError as _v:
