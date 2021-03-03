@@ -1,9 +1,12 @@
 Corona_stats
 
+
+
 Downloads the current statistics regarding covid 19 from the John
 Hopkins University and transfers them into an Influx database.
 
 Usage
+
 1.Install Influxdb
 
 2.Configure Influx and create database <covid_stats>
