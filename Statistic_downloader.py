@@ -125,7 +125,7 @@ class DataPoint:
             self.fill_from_header6()
         else:
             print('USING DEBUG METHOD', self.headers)
-            self.fill_from_header5()
+            self.fill_from_header6()
 
     def fill_from_header2(self, province_data):
 
