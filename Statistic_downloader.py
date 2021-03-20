@@ -9,7 +9,7 @@ import json
 import copy
 import re
 from progress.bar import Bar
-
+import logging
 DOWNLOAD_LINK = ""
 INFLUX_CONFIG = {
     "IP": "influx_server.xyz",
@@ -30,15 +30,25 @@ class HeaderMismatch(Exception):
 def safe_float_cast(fl: str, default: float = 0):
     try:
         return float(fl)
-    except:
-        return float(default)
+    except Exception as _e:
+        if fl == "" or fl is None:
+            return float(default)
+
+        raise _e
 
 
-def safe_int_cast(fl: str, default: int = 0):
+def safe_int_cast(integer: str, default: int = 0):
     try:
-        return int(fl)
-    except:
-        return int(default)
+        return int(integer)
+    except Exception as _e:
+        try:
+            return int(float(integer))
+        except:
+            pass
+        if integer == "" or integer is None:
+            return default
+        print(f"failed to parse {integer} ")
+        raise _e
 
 
 def check_settings(config_root=""):
@@ -119,13 +129,19 @@ class DataPoint:
 
             self.fill_from_header5()
         elif self.headers == ['FIPS', 'Admin2', 'Province_State', 'Country_Region', 'Last_Update', 'Lat', 'Long_',
-            'Confirmed',
-            'Deaths', 'Recovered', 'Active', 'Combined_Key', 'Incident_Rate',
-            'Case_Fatality_Ratio']:
+                              'Confirmed',
+                              'Deaths', 'Recovered', 'Active', 'Combined_Key', 'Incident_Rate',
+                              'Case_Fatality_Ratio']:
             self.fill_from_header6()
+        elif self.headers == ['FIPS', 'Admin2', 'Province_State', 'Country_Region', 'Last_Update', 'Lat', 'Long_',
+                              'Confirmed',
+                              'Deaths', 'Recovered', 'Active', 'Combined_Key', 'Incidence_Rate',
+                              'Case_Fatality_Ratio']:
+            self.fill_from_header7()
+
         else:
             print('USING DEBUG METHOD', self.headers)
-            self.fill_from_header6()
+            self.fill_from_header7()
 
     def fill_from_header2(self, province_data):
 
@@ -192,10 +208,10 @@ class DataPoint:
             'Combined_Key': '{},{}'.format(fix_china(self.in_list[0]), fix_china(self.in_list[1]))
         }
         self.fields = {
-            'Confirmed': int(self.in_list[3]),
-            'Deaths': int(self.in_list[4]),
-            'Recovered': int(self.in_list[5]),
-            'Active': int(self.in_list[3]) - int(self.in_list[5]) - int(self.in_list[4]),
+            'Confirmed': safe_int_cast(self.in_list[3]),
+            'Deaths': safe_int_cast(self.in_list[4]),
+            'Recovered': safe_int_cast(self.in_list[5]),
+            'Active': safe_int_cast(self.in_list[3]) - int(self.in_list[5]) - int(self.in_list[4]),
             'Last_Update': fix_american_dates(self.in_list[2]),
             'Lat': safe_float_cast(self.in_list[6]),
             'Long_': safe_float_cast(self.in_list[7]),
@@ -228,10 +244,10 @@ class DataPoint:
             'Combined_Key': self.in_list[11]
         }
         self.fields = {
-            'Confirmed': int(self.in_list[7]),
-            'Deaths': int(self.in_list[8]),
-            'Recovered': int(self.in_list[9]),
-            'Active': int(self.in_list[10]),
+            'Confirmed': safe_int_cast(self.in_list[7]),
+            'Deaths': safe_int_cast(self.in_list[8]),
+            'Recovered': safe_int_cast(self.in_list[9]),
+            'Active': safe_int_cast(self.in_list[10]),
             'Last_Update': fix_american_dates(self.in_list[4]),
             'Lat': safe_float_cast(self.in_list[5]),
             'Long_': safe_float_cast(self.in_list[6]),
@@ -260,7 +276,54 @@ class DataPoint:
                 'Province_State': self.in_list[2],
                 'Country_Region': self.in_list[3],
 
+                'Combined_Key': self.in_list[11]
+            }
+            self.fields = {
+                'Last_Update': fix_american_dates(self.in_list[4]),
+                'Lat': safe_float_cast(self.in_list[5]),
+                'Long_': safe_float_cast(self.in_list[6]),
+                'Incident_Rate': safe_float_cast(self.in_list[12]),
+                'Case-Fatality_Ratio': safe_float_cast(self.in_list[13])
+            }
 
+            to_cast_to_int = [('Deaths', self.in_list[8]),
+                              ('Recovered', self.in_list[9]),
+                              ('Active', self.in_list[10]),
+                              ('Confirmed', self.in_list[7])]
+            for p in to_cast_to_int:
+                try:
+                    self.fields[p[0]] = safe_int_cast(p[1])
+                except Exception as _e:
+                    print("{} can not Format {} from line {}".format(_e, p, self.in_list))
+
+
+        except ValueError as _v:
+            print(_v, self.in_list)
+
+    def fill_from_header6(self):
+        requiered_headers = ['FIPS', 'Admin2', 'Province_State', 'Country_Region', 'Last_Update', 'Lat', 'Long_',
+                             'Confirmed', 'Deaths', 'Recovered', 'Active', 'Combined_Key', 'Incident_Rate',
+                             'Case_Fatality_Ratio']
+        for i in range(len(requiered_headers)):
+            try:
+                if requiered_headers[i] != self.headers[i]:
+                    raise HeaderMismatch("Header Mismatch fix headers or DataPoint.fill_from_header6")
+            except IndexError as ind:
+                print(ind, ind.args)
+                raise HeaderMismatch("Header Mismatch fix headers or DataPoint.fill_from_header6")
+            except ValueError as val:
+                print(val, val.args)
+                raise HeaderMismatch("Header Mismatch fix headers or DataPoint.fill_from_header6")
+        try:
+            self.measurement = 'cases'
+            self.time = set_time_to_noon(self.in_list[4])
+            self.tags = {
+                'FIPS': self.in_list[0],
+                'Admin2': self.in_list[1],
+                'Province_State': self.in_list[2],
+                'Country_Region': self.in_list[3],
+
+                # Todo cast to datetime object => new function to transform all string formats..
 
                 'Combined_Key': self.in_list[11]
             }
@@ -278,14 +341,15 @@ class DataPoint:
                               ('Confirmed', self.in_list[7])]
             for p in to_cast_to_int:
                 try:
-                    self.fields[p[0]] = int(p[1])
+                    self.fields[p[0]] = safe_int_cast(p[1])
                 except Exception as _e:
                     print("{} can not Format {} from line {}".format(_e, p, self.in_list))
 
 
         except ValueError as _v:
             print(_v, self.in_list)
-    def fill_from_header6(self):
+
+    def fill_from_header7(self):
         requiered_headers = ['FIPS', 'Admin2', 'Province_State', 'Country_Region', 'Last_Update', 'Lat', 'Long_',
                              'Confirmed', 'Deaths', 'Recovered', 'Active', 'Combined_Key', 'Incidence_Rate',
                              'Case_Fatality_Ratio']
@@ -326,7 +390,7 @@ class DataPoint:
                               ('Confirmed', self.in_list[7])]
             for p in to_cast_to_int:
                 try:
-                    self.fields[p[0]] = int(p[1])
+                    self.fields[p[0]] = safe_int_cast(p[1])
                 except Exception as _e:
                     print("{} can not Format {} from line {}".format(_e, p, self.in_list))
 
@@ -388,7 +452,7 @@ def get_timeseries_points():
     recovered = ''
     timepoints = []
     print(deaths)
-    for ct in contents:  # limit to new format Todo Formatting for all existing options
+    for ct in contents:  # limit to new format
         split_name = ct.name.split('.')
         time.sleep(.1)
         if split_name[-1] == 'csv':
@@ -450,12 +514,18 @@ def push_data_to_influx(datalist):
     number_of_chunks = int(len(dictlist) / chunk_size)
     dictlist_chunks = chunks(dictlist, chunk_size)
 
-    print('uploading data in {} chuks\n\n'.format(number_of_chunks))
+    print('uploading data in {} chunks\n\n'.format(number_of_chunks))
 
     progress_bar = Bar("uploading chunks", max=number_of_chunks)
+
     for i, c in enumerate(dictlist_chunks):
         progress_bar.next()
-        result = influx_client.write_points(c)
+        try:
+            result = influx_client.write_points(c)
+        except Exception as _e:
+            with open(f"failed_chunks/{i}.json","w")as c_file:
+                json.dump(c,c_file)
+            print(f"failed to upload chunk {i} with {_e}")
     progress_bar.finish()
     influx_client.close()
     return result
@@ -482,7 +552,7 @@ def get_data(github_link):
     headers = ['FIPS', 'Admin2', 'Province_State', 'Country_Region', 'Last_Update', 'Lat', 'Long_',
                'Confirmed', 'Deaths', 'Recovered', 'Active', 'Combined_Key']
     return_list: list[DataPoint] = []
-    for ct in contents:  # limit to new format Todo Formatting for all existing options
+    for ct in contents:  # limit to new format
         split_name = ct.name.split('.')
         time.sleep(.1)
         if split_name[-1] == 'csv':
