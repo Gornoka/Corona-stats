@@ -10,7 +10,7 @@ Usage
 
 3.install script dependecies
     PyGithub => python3 -m pip install PyGithub
-    influx   => python3 -m pip install influx
+    influx   => python3 -m pip install influxdb
     progress => python3 -m pip install progress
 4.run script once to create default settings
     fill Settings with values and run Script
