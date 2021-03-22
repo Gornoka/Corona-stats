@@ -1,0 +1,3 @@
+3 4 * * * python3 /usr/app/Statistic_downloader.py 
+
+#

@@ -128,3 +128,5 @@ dmypy.json
 # database config
 configs/
 
+/Corona-stats.tar
+/failed_chunks/
